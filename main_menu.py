@@ -1,11 +1,12 @@
 import pygame
 import pygame_menu
+import os
 
 pygame.init()
 surface = pygame.display.set_mode((1280, 720))
 def singleplayer():
+    os.system('main.py')
     pygame.display.set_caption("Singleplayer")
-    PLAY_MOUSE_POS = pygame.mouse.get_pos()
     r=True
     while r==True:
         surface.fill("black")
