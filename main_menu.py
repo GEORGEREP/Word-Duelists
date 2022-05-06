@@ -5,6 +5,7 @@ import os
 pygame.init()
 surface = pygame.display.set_mode((1280, 720))
 def singleplayer():
+    pygame.quit()
     os.system('main.py')
     pygame.display.set_caption("Singleplayer")
     r=True

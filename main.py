@@ -5,16 +5,14 @@ from words import *
 
 pygame.init()
 
-# Constants
-
 WIDTH, HEIGHT = 633, 900
 
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-BACKGROUND = pygame.image.load("assets/Starting Tiles.png")
+BACKGROUND = pygame.image.load("assets/Grid.png")
 BACKGROUND_RECT = BACKGROUND.get_rect(center=(317, 300))
 ICON = pygame.image.load("assets/Icon.png")
 
-pygame.display.set_caption("Wordle!")
+pygame.display.set_caption("Word Duelists")
 pygame.display.set_icon(ICON)
 
 GREEN = "#6aaa64"
@@ -23,14 +21,14 @@ GREY = "#787c7e"
 OUTLINE = "#d3d6da"
 FILLED_OUTLINE = "#878a8c"
 
-CORRECT_WORD = "coder"
+CORRECT_WORD = random.choice(WORDS)
 
 ALPHABET = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
 
 GUESSED_LETTER_FONT = pygame.font.Font("assets/FreeSansBold.otf", 50)
 AVAILABLE_LETTER_FONT = pygame.font.Font("assets/FreeSansBold.otf", 25)
 
-SCREEN.fill("white")
+SCREEN.fill("black")
 SCREEN.blit(BACKGROUND, BACKGROUND_RECT)
 pygame.display.update()
 
@@ -38,26 +36,24 @@ LETTER_X_SPACING = 85
 LETTER_Y_SPACING = 12
 LETTER_SIZE = 75
 
-# Global variables
 
 guesses_count = 0
 
-# guesses is a 2D list that will store guesses. A guess will be a list of letters.
-# The list will be iterated through and each letter in each guess will be drawn on the screen.
+# Λίστα με τις προσπάθειες
 guesses = [[]] * 6
 
 current_guess = []
 current_guess_string = ""
 current_letter_bg_x = 110
 
-# Indicators is a list storing all the Indicator object. An indicator is that button thing with all the letters you see.
+# Το indicator είναι υπεύθυνο για την λειτουργία των γραμμάτων κάτω απο το grid.
 indicators = []
 
 game_result = ""
 
 class Letter:
     def __init__(self, text, bg_position):
-        # Initializes all the variables, including text, color, position, size, etc.
+        # Αρχικοποίηση των μεταβλητών όπως τα χρώματα, η γραμματοσειρά οι θέσεις και το μέγεθος.
         self.bg_color = "white"
         self.text_color = "black"
         self.bg_position = bg_position
@@ -70,7 +66,7 @@ class Letter:
         self.text_rect = self.text_surface.get_rect(center=self.text_position)
 
     def draw(self):
-        # Puts the letter and text on the screen at the desired positions.
+        # Τοποθέτηση των γραμμάτων στις σωστές θέσεις.
         pygame.draw.rect(SCREEN, self.bg_color, self.bg_rect)
         if self.bg_color == "white":
             pygame.draw.rect(SCREEN, FILLED_OUTLINE, self.bg_rect, 3)
@@ -79,14 +75,14 @@ class Letter:
         pygame.display.update()
 
     def delete(self):
-        # Fills the letter's spot with the default square, emptying it.
+        # Άδειασμα των τετραγώνων.
         pygame.draw.rect(SCREEN, "white", self.bg_rect)
         pygame.draw.rect(SCREEN, OUTLINE, self.bg_rect, 3)
         pygame.display.update()
 
 class Indicator:
     def __init__(self, x, y, letter):
-        # Initializes variables such as color, size, position, and letter.
+        # Αρχικοποίηση μεταβλητών.
         self.x = x
         self.y = y
         self.text = letter
@@ -94,14 +90,14 @@ class Indicator:
         self.bg_color = OUTLINE
 
     def draw(self):
-        # Puts the indicator and its text on the screen at the desired position.
+        # Τοποθέτηση των γραμμάτων κάτω από το grid.
         pygame.draw.rect(SCREEN, self.bg_color, self.rect)
-        self.text_surface = AVAILABLE_LETTER_FONT.render(self.text, True, "white")
+        self.text_surface = AVAILABLE_LETTER_FONT.render(self.text, True, "black")
         self.text_rect = self.text_surface.get_rect(center=(self.x+27, self.y+30))
         SCREEN.blit(self.text_surface, self.text_rect)
         pygame.display.update()
 
-# Drawing the indicators on the screen.
+# Εμφάνιση των γραμμάτων κάτω απο το grid στην οθόνη.
 
 indicator_x, indicator_y = 20, 600
 
@@ -118,13 +114,13 @@ for i in range(3):
         indicator_x = 105
 
 def check_guess(guess_to_check):
-    # Goes through each letter and checks if it should be green, yellow, or grey.
+    # Ελέγχει κάθε γράμμα και το σημειώνει ή πράσινο ή κίτρινο ή γκρι.
     global current_guess, current_guess_string, guesses_count, current_letter_bg_x, game_result
     game_decided = False
     for i in range(5):
         lowercase_letter = guess_to_check[i].text.lower()
         if lowercase_letter in CORRECT_WORD:
-            if lowercase_letter == CORRECT_WORD[i]:
+            if lowercase_letter == CORRECT_WORD:
                 guess_to_check[i].bg_color = GREEN
                 for indicator in indicators:
                     if indicator.text == lowercase_letter.upper():
@@ -163,7 +159,7 @@ def check_guess(guess_to_check):
         game_result = "L"
 
 def play_again():
-    # Puts the play again text on the screen.
+    # Εμφανίζεται το play again στην οθόνη.
     pygame.draw.rect(SCREEN, "white", (10, 600, 1000, 600))
     play_again_font = pygame.font.Font("assets/FreeSansBold.otf", 40)
     play_again_text = play_again_font.render("Press ENTER to Play Again!", True, "black")
@@ -175,9 +171,9 @@ def play_again():
     pygame.display.update()
 
 def reset():
-    # Resets all global variables to their default states.
+    # Επαναφορά των μεταβλητών στην αρχική τους κατάσταση.
     global guesses_count, CORRECT_WORD, guesses, current_guess, current_guess_string, game_result
-    SCREEN.fill("white")
+    SCREEN.fill("black")
     SCREEN.blit(BACKGROUND, BACKGROUND_RECT)
     guesses_count = 0
     CORRECT_WORD = random.choice(WORDS)
@@ -191,7 +187,7 @@ def reset():
         indicator.draw()
 
 def create_new_letter():
-    # Creates a new letter and adds it to the guess.
+    # Δημιουργεί και προσθέτει νέο γράμμα.
     global current_guess_string, current_letter_bg_x
     current_guess_string += key_pressed
     new_letter = Letter(key_pressed, (current_letter_bg_x, guesses_count*100+LETTER_Y_SPACING))
@@ -203,7 +199,7 @@ def create_new_letter():
             letter.draw()
 
 def delete_letter():
-    # Deletes the last letter from the guess.
+    # Διαγράφει το προηγούμενο γράμμα.
     global current_guess_string, current_letter_bg_x
     guesses[guesses_count][-1].delete()
     guesses[guesses_count].pop()
