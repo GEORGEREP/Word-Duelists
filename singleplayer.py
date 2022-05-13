@@ -4,6 +4,8 @@ import random
 from words import *
 
 pygame.init()
+clock = pygame.time.Clock()
+clock.tick(60)
 
 WIDTH, HEIGHT = 633, 900
 
@@ -21,8 +23,8 @@ GREY = "#787c7e"
 OUTLINE = "#d3d6da"
 FILLED_OUTLINE = "#878a8c"
 
-CORRECT_WORD = random.choice(WORDS)
-
+CORRECT_WORD = (random.choice(WORDS))
+print (CORRECT_WORD)
 ALPHABET = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"]
 
 GUESSED_LETTER_FONT = pygame.font.Font("assets/FreeSansBold.otf", 50)
@@ -30,12 +32,11 @@ AVAILABLE_LETTER_FONT = pygame.font.Font("assets/FreeSansBold.otf", 25)
 
 SCREEN.fill("black")
 SCREEN.blit(BACKGROUND, BACKGROUND_RECT)
-pygame.display.update()
 
+pygame.display.update()
 LETTER_X_SPACING = 85
 LETTER_Y_SPACING = 12
 LETTER_SIZE = 75
-
 
 guesses_count = 0
 
@@ -68,7 +69,7 @@ class Letter:
     def draw(self):
         # Τοποθέτηση των γραμμάτων στις σωστές θέσεις.
         pygame.draw.rect(SCREEN, self.bg_color, self.bg_rect)
-        if self.bg_color == "black":
+        if self.bg_color == "white":
             pygame.draw.rect(SCREEN, FILLED_OUTLINE, self.bg_rect, 3)
         self.text_surface = GUESSED_LETTER_FONT.render(self.text, True, self.text_color)
         SCREEN.blit(self.text_surface, self.text_rect)
@@ -100,6 +101,7 @@ class Indicator:
 # Εμφάνιση των γραμμάτων κάτω απο το grid στην οθόνη.
 
 indicator_x, indicator_y = 20, 600
+indicator_x2, indicator_y2 = 770, 600
 
 for i in range(3):
     for letter in ALPHABET[i]:
@@ -115,18 +117,18 @@ for i in range(3):
 
 def check_guess(guess_to_check):
     # Ελέγχει κάθε γράμμα και το σημειώνει ή πράσινο ή κίτρινο ή γκρι.
-    global current_guess, current_guess_string, guesses_count, current_letter_bg_x, game_result
+    global current_guess, current_guess_string, guesses_count, current_letter_bg_x, game_result, LETTER_Y_SPACING
     game_decided = False
     for i in range(5):
         lowercase_letter = guess_to_check[i].text.lower()
         if lowercase_letter in CORRECT_WORD:
-            if lowercase_letter == CORRECT_WORD:
+            if lowercase_letter == CORRECT_WORD[i]:
                 guess_to_check[i].bg_color = GREEN
                 for indicator in indicators:
                     if indicator.text == lowercase_letter.upper():
                         indicator.bg_color = GREEN
                         indicator.draw()
-                guess_to_check[i].text_color = "white"
+                guess_to_check[i].text_color = "black"
                 if not game_decided:
                     game_result = "W"
             else:
@@ -135,7 +137,7 @@ def check_guess(guess_to_check):
                     if indicator.text == lowercase_letter.upper():
                         indicator.bg_color = YELLOW
                         indicator.draw()
-                guess_to_check[i].text_color = "white"
+                guess_to_check[i].text_color = "black"
                 game_result = ""
                 game_decided = True
         else:
@@ -144,12 +146,12 @@ def check_guess(guess_to_check):
                 if indicator.text == lowercase_letter.upper():
                     indicator.bg_color = GREY
                     indicator.draw()
-            guess_to_check[i].text_color = "white"
+            guess_to_check[i].text_color = "black"
             game_result = ""
             game_decided = True
         guess_to_check[i].draw()
         pygame.display.update()
-    
+ 
     guesses_count += 1
     current_guess = []
     current_guess_string = ""
@@ -160,27 +162,28 @@ def check_guess(guess_to_check):
 
 def play_again():
     # Εμφανίζεται το play again στην οθόνη.
-    pygame.draw.rect(SCREEN, "white", (10, 600, 1000, 600))
     play_again_font = pygame.font.Font("assets/FreeSansBold.otf", 40)
-    play_again_text = play_again_font.render("Press ENTER to Play Again", True, "black")
-    play_again_rect = play_again_text.get_rect(center=(WIDTH/2, 700))
-    word_was_text = play_again_font.render(f"The word was {CORRECT_WORD}", True, "black")
-    word_was_rect = word_was_text.get_rect(center=(WIDTH/2, 650))
+    play_again_text = play_again_font.render("Press ENTER to Play Again", True, "white")
+    play_again_rect = play_again_text.get_rect(center=(WIDTH/2.1, 300))
+    word_was_text = play_again_font.render(f"The word was {CORRECT_WORD}", True, "white")
+    word_was_rect = word_was_text.get_rect(center=(WIDTH/2.1, 150))
     SCREEN.blit(word_was_text, word_was_rect)
     SCREEN.blit(play_again_text, play_again_rect)
     pygame.display.update()
-
 def reset():
     # Επαναφορά των μεταβλητών στην αρχική τους κατάσταση.
-    global guesses_count, CORRECT_WORD, guesses, current_guess, current_guess_string, game_result
+    global guesses_count, CORRECT_WORD, guesses, current_guess, current_guess_string, game_result, current_letter_bg_x, LETTER_Y_SPACING
     SCREEN.fill("black")
     SCREEN.blit(BACKGROUND, BACKGROUND_RECT)
     guesses_count = 0
     CORRECT_WORD = random.choice(WORDS)
+    print (CORRECT_WORD)
     guesses = [[]] * 6
     current_guess = []
     current_guess_string = ""
     game_result = ""
+    current_letter_bg_x = 110
+
     pygame.display.update()
     for indicator in indicators:
         indicator.bg_color = OUTLINE
@@ -206,7 +209,6 @@ def delete_letter():
     current_guess_string = current_guess_string[:-1]
     current_guess.pop()
     current_letter_bg_x -= LETTER_X_SPACING
-
 while True:
     if game_result != "":
         play_again()
